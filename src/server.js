@@ -4,13 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var webpack = require('webpack');
+var webpackDevMiddleware = require('webpack-dev-middleware');
+var webpackHotMiddleware = require('webpack-hot-middleware');
 
 var routes = require('./routes/index');
 var about = require('./routes/about');
 
 var app = express();
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
@@ -20,13 +22,31 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(require('node-sass-middleware')({
-  src: path.join(__dirname, 'public'),
-  dest: path.join(__dirname, 'public'),
-  indentedSyntax: true,
-  sourceMap: true
-}));
-app.use(express.static(path.join(__dirname, 'public')));
+
+if (app.get('env') === 'development') {
+  var webpackConfig = require('../webpack.config.dev');
+  var compiler = webpack(webpackConfig);
+
+  app.use(webpackDevMiddleware(compiler, {
+    hot: true,
+    filename: 'index.js',
+    publicPath: '/',
+    stats: {
+      colors: true,
+    },
+    historyApiFallback: true,
+  }));
+
+  app.use(webpackHotMiddleware(compiler, {
+    log: console.log,
+    path: '/__webpack_hmr',
+    heartbeat: 10 * 1000,
+  }));
+
+  app.use(express.static(path.join(__dirname, '../public')));
+} else {
+  app.use(express.static(path.join(__dirname, '../dist')));
+}
 
 app.use('/', routes);
 app.use('/about', about);
@@ -61,6 +81,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
