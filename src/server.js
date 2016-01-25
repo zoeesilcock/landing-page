@@ -51,6 +51,16 @@ if (app.get('env') === 'development') {
 app.use('/', routes);
 app.use('/about', about);
 
+hbs.localsAsTemplateData(app);
+hbs.registerPartials(__dirname + '/views/partials');
+hbs.registerHelper('isActive', function(path, path2) {
+  var active = '';
+  if (path == path2) {
+    active = 'class="active"';
+  }
+  return new hbs.SafeString(active);
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
