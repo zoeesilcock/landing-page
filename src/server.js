@@ -4,9 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var hbs = require('hbs');
 var webpack = require('webpack');
 var webpackDevMiddleware = require('webpack-dev-middleware');
-var webpackHotMiddleware = require('webpack-hot-middleware');
+var webpackHotMiddlewareBuilder = require('webpack-hot-middleware');
 
 var routes = require('./routes/index');
 var about = require('./routes/about');
@@ -24,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 if (app.get('env') === 'development') {
+  var chokidar = require('chokidar');
   var webpackConfig = require('../webpack.config.dev');
   var compiler = webpack(webpackConfig);
 
@@ -37,11 +39,20 @@ if (app.get('env') === 'development') {
     historyApiFallback: true,
   }));
 
-  app.use(webpackHotMiddleware(compiler, {
+  webpackHotMiddleware = webpackHotMiddlewareBuilder(compiler, {
     log: console.log,
     path: '/__webpack_hmr',
-    heartbeat: 10 * 1000,
-  }));
+    heartbeat: 10 * 1000
+  });
+
+  app.use(webpackHotMiddleware);
+
+  var watcher = chokidar.watch(['./src/views'], { ignored: /\.swp/ });
+  watcher.on('ready', function() {
+    watcher.on('all', function(event, path) {
+      webpackHotMiddleware.publish({ reload: true });
+    });
+  });
 
   app.use(express.static(path.join(__dirname, '../public')));
 } else {
