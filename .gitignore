@@ -33,4 +33,4 @@ node_modules
 .node_repl_history
 
 # Generated files
-dist/index.js
+dist/*
