@@ -5,7 +5,6 @@ module.exports = {
   entry: {
     app: [
       'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
-      'bootstrap-loader',
       './src/index.js'
     ]
   },
@@ -24,7 +23,10 @@ module.exports = {
         },
         exclude: path.join(__dirname, 'node_modules')
       },
-      { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports?jQuery=jquery' },
+      {
+        test: /\.scss$/,
+        loader: 'style!css!sass!'
+      },
       { test: /\.(woff2?|svg)$/, loader: 'url?limit=10000' },
       { test: /\.(ttf|eot)$/, loader: 'file' }
     ]

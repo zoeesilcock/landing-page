@@ -4,7 +4,6 @@ var webpack = require('webpack');
 module.exports = {
   entry: {
     app: [
-      'bootstrap-loader',
       './src/index.js'
     ]
   },
@@ -23,7 +22,10 @@ module.exports = {
         },
         exclude: path.join(__dirname, 'node_modules')
       },
-      { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports?jQuery=jquery' },
+      {
+        test: /\.scss$/,
+        loader: 'style!css!sass!'
+      },
       { test: /\.(woff2?|svg)$/, loader: 'url?limit=10000' },
       { test: /\.(ttf|eot)$/, loader: 'file' }
     ]

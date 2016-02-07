@@ -27,10 +27,8 @@ file, see the `src/routes` directory for example routes.
 
 ### Styles
 
-It uses bootstrap as the frontend framework, you can customize bootstrap styles
-in `src/styles/bootstrap/pre-customizations.scss` and
-`src/styles/bootstrap/customizations.scss`. Create your own scss files in the
-`src/styles` directory and import them in the `src/styles/main.scss` file.
+Create your own scss files in the `src/styles` directory and import them in
+the `src/styles/main.scss` file.
 
 ### Views
 
